@@ -1,0 +1,21 @@
+#labels Featured
+Ardubot is a modular Arduino based robot
+
+= Introduction =
+
+Ardubot is named after the 'Ardubot Bare PCB' from SparkFun, which build the chassis of Ardubot. 
+
+
+= Features =
+
+ * Seeeduino V328 Arduino compatible processor board
+ * L293D motor driver
+ * 2 x Pololu micro metal gearmotors 100:1
+ * 2 x Pololu wheels 42x16 with quadrature encoders
+ * 3/8" metall ball caster
+ * LiPo battery 7.4V 1100mAh
+ * DogM LCD module 16x3 characters I2C enabled with a PCF8574 I2C port expander
+ * Pololu QTR-8RC Reflectance Sensor Array as line sensor 
+ * 2nd I2C port expander on Ardubot PCB for line sensor
+ * 74AC14 Hex Inverter with Schmitt-Trigger inputs on Ardubot PCB for general purpose use
+
