@@ -3,7 +3,7 @@ Ardubot is a modular Arduino based robot
 
 = Introduction =
 
-Ardubot is named after the 'Ardubot Bare PCB' from SparkFun, which build the chassis of Ardubot. 
+Ardubot is named after the 'Ardubot Bare PCB' from Sparkfun, which build the chassis of Ardubot. 
 
 
 = Features =
