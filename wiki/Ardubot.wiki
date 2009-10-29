@@ -1,4 +1,4 @@
-#labels Featured
+#labels Featured,Phase-Design
 Ardubot is a modular Arduino based robot
 
 = Introduction =
@@ -18,4 +18,3 @@ Ardubot is named after the 'Ardubot Bare PCB' from SparkFun, which build the cha
  * Pololu QTR-8RC Reflectance Sensor Array as line sensor 
  * 2nd I2C port expander on Ardubot PCB for line sensor
  * 74AC14 Hex Inverter with Schmitt-Trigger inputs on Ardubot PCB for general purpose use
-
