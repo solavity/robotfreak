@@ -1,0 +1,31 @@
+#######################################
+# Syntax Coloring Map
+#######################################
+
+#keyword2.style=#993333,bold
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+DualDCMotor KEYWORD1
+QuadratureEncoder KEYWORD1
+LCDi2cDogm KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+setSpeed KEYWORD2
+setDirection KEYWORD2
+reset KEYWORD2
+readLt KEYWORD2
+readRt KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+# MAX_DATA_BYTES LITERAL1
+
+
