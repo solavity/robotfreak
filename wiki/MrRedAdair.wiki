@@ -1,0 +1,23 @@
+Mr. Red Adair firefighting robot. 
+
+= Introduction =
+
+Mr. Red Adair is based on the Mr. Basic chassis from Arexx/Dagu. He was build for the Mr. Basic challenge at letsmakerobots.com and has won 3. place.
+
+= Features =
+
+ * Mr. Basic chassis
+ * DIY Arduino clone with ATmega328 controller
+ * Pololu LVDSMC 'Low voltage dual serial motor controller'
+ * Wii IR Camera as fire detecting sensor
+ * Maxbotic LV-EZ1 sonar sensor for obstacle detection
+ * 2 x Mr. Basic standard motors and gearbox 4 wheel drive
+ * DC motor and ventilator as blower motor (scraped from defective hair dryer)
+ * 9V battery for electronic and blower motor
+ * 3 x 1,5V battery pack for 4 wheel drive
+
+
+= Videos =
+
+<wiki:video url="http://www.youtube.com/watch?v=rDjLI9XPWlA"/>
+<wiki:video url="http://www.youtube.com/watch?v=ZFuyRBvPL0c"/>
