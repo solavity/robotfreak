@@ -1,5 +1,5 @@
+#summary Ardubot is a modular Arduino based robot
 #labels Featured,Phase-Design
-Ardubot is a modular Arduino based robot
 
 = Introduction =
 
@@ -8,7 +8,10 @@ Ardubot is named after the 'Ardubot Bare PCB' from Sparkfun, which build the cha
 
 = Features =
 
+= Partlist =
+
  * Seeeduino V328 Arduino compatible processor board
+ * Ardubot Bare PCB 
  * L293D motor driver
  * 2 x Pololu micro metal gearmotors 100:1
  * 2 x Pololu wheels 42x16 with quadrature encoders
@@ -21,4 +24,8 @@ Ardubot is named after the 'Ardubot Bare PCB' from Sparkfun, which build the cha
 
 = Videos =
 
+Ardubot writes LMR (kinda)
+
 <wiki:video url="http://www.youtube.com/watch?v=GM3jkn8ZhFc"/>
+
+= Weblinks =
