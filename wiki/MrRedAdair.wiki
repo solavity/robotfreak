@@ -1,5 +1,5 @@
+#summary Mr. Red Adair firefighting robot.
 #labels Featured,Phase-Design
-Mr. Red Adair firefighting robot. 
 
 = Introduction =
 
