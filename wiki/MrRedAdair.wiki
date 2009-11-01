@@ -5,7 +5,15 @@
 
 Mr. Red Adair is based on the Mr. Basic chassis from Arexx/Dagu. He was build for the Mr. Basic challenge at letsmakerobots.com and has won 3. place.
 
+http://farm4.static.flickr.com/3385/3625798875_de5cfa762b.jpg
+
 = Features =
+
+ * can detect infrared sources (candle ligth, etc) over a distance of 1..2m
+ * fight fire with his blower motor
+ * can detect obstacles with his sonar sensor
+
+= Partslist =
 
  * Mr. Basic chassis
  * DIY Arduino clone with ATmega328 controller
@@ -22,3 +30,7 @@ Mr. Red Adair is based on the Mr. Basic chassis from Arexx/Dagu. He was build fo
 
 <wiki:video url="http://www.youtube.com/watch?v=rDjLI9XPWlA"/>
 <wiki:video url="http://www.youtube.com/watch?v=ZFuyRBvPL0c"/>
+
+= Weblinks =
+
+  * [http://www.flickr.com/photos/hmblgrmpf/sets/72157619742883806/ Flickr album]
