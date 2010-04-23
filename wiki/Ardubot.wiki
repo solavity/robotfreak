@@ -27,5 +27,9 @@ Ardubot is named after the 'Ardubot Bare PCB' from Sparkfun, which build the cha
 Ardubot writes LMR (kinda)
 
 <wiki:video url="http://www.youtube.com/watch?v=GM3jkn8ZhFc"/>
+<wiki:video url="http://www.youtube.com/watch?v=MKkgG_4Nb8E"/>
 
 = Weblinks =
+
+ * [http://letsmakerobots.com/node/18211 ArduBot at Letsmakerobots]
+ * [http://www.robotfreak.de/blog/robotik/ardubot/194 Ardubot at RobotFreak Blog]
