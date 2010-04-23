@@ -31,7 +31,8 @@ Ardubot writes LMR (kinda)
 
 = Weblinks =
 
- * [http://letsmakerobots.com/node/18211 ArduBot at Letsmakerobots]
+ * [http://letsmakerobots.com/node/11987 ArduBot at letsmakerobots]
  * [http://www.robotfreak.de/blog/robotik/ardubot/194 Ardubot at RobotFreak Blog]
  * [http://www.flickr.com/photos/hmblgrmpf/sets/72157622510554147/ Ardubot Flickr album]
+ * [http://letsmakerobots.com/node/18211 ArduBot makes sound]
  * [http://blog.makezine.com/archive/2010/03/old_robot_learns_new_trick_becomes.html Ardubot at Make: Online]
