@@ -33,3 +33,5 @@ Ardubot writes LMR (kinda)
 
  * [http://letsmakerobots.com/node/18211 ArduBot at Letsmakerobots]
  * [http://www.robotfreak.de/blog/robotik/ardubot/194 Ardubot at RobotFreak Blog]
+ * [http://www.flickr.com/photos/hmblgrmpf/sets/72157622510554147/ Ardubot Flickr album]
+ * [http://blog.makezine.com/archive/2010/03/old_robot_learns_new_trick_becomes.html Ardubot at Make: Online]
