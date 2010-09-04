@@ -14,7 +14,7 @@ Pacman is my recent robot project. Switching from Arduino to another platform, t
 = Hardware =
 
     * FEZ Domino board
-    * ArduMoto board from Sparkfun (with Foekie patch)
+    * Ardumoto board from Sparkfun
     * selfmade line sensor board with 4 x CNY70 IR reflective sensors
     * Sharp GP2D120 IR sensor for wall following
     * Maxbotix EZ1 ultra sonic sensor for front object detection
