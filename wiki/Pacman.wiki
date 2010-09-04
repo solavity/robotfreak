@@ -1,0 +1,17 @@
+#summary Pacman robot using .NETMF and FEZ Domnio
+#labels Featured
+
+= Introduction =
+
+Pacman is my recent robot project. Switching from Arduino to another platform, the FEZ Domino from tinyCLR. It runs .NET micro framework 4.1 and can be programmed and debugged from inside Visual Studio 2010.
+
+
+= Hardware =
+
+    * FEZ Domino board
+    * ArduMoto board from Sparkfun (with Foekie patch)
+    * selfmade line sensor board with 4 x CNY70 IR reflective sensors
+    * Sharp GP2D120 IR sensor for wall following
+    * Maxbotix EZ1 ultra sonic sensor for front object detection
+    * DAGU 2WD Beginners Robot chassis
+    * piezo speaker for sound generation 
