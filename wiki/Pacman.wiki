@@ -26,3 +26,9 @@ Pacman is my recent robot project. Switching from Arduino to another platform, t
 
 
 = Weblinks =
+
+    * Pacman at tinyCLR forum
+    * Pacman at letsmakerobots
+    * my Google Code page
+    * Pacman album on Flickr
+    * RobotFreaks Youtube video channel 
