@@ -35,7 +35,7 @@ using System;
 //using System.IO.Ports;
 //using System.Runtime.CompilerServices;
 using System.Threading;
-//using Microsoft.SPOT;
+using Microsoft.SPOT;
 using Microsoft.SPOT.Hardware;
 using GHIElectronics.NETMF.Hardware;
 
@@ -102,24 +102,24 @@ namespace GHIElectronics.NETMF.FEZ
                 if (speed1 < 0)
                 {
                     _dir1.Write(true);
-                    _pwm1.Set(1000, (byte)(100 - Math.Abs(speed1)));
+                    _pwm1.Set(100, (byte)(100 - System.Math.Abs(speed1)));
                 }
                 else
                 {
                     _dir1.Write(false);
-                    _pwm1.Set(1000, (byte)(speed1));
+                    _pwm1.Set(100, (byte)(speed1));
                 }
                
                 ////////////////////////////
                 if (speed2 < 0)
                 {
                     _dir2.Write(true);
-                    _pwm2.Set(1000, (byte)(100 - Math.Abs(speed2)));
+                    _pwm2.Set(100, (byte)(100 - System.Math.Abs(speed2)));
                 }
                 else
                 {
                     _dir2.Write(false);
-                    _pwm2.Set(1000, (byte)(speed2));
+                    _pwm2.Set(100, (byte)(speed2));
                 }
             }
 
@@ -133,14 +133,14 @@ namespace GHIElectronics.NETMF.FEZ
                 {
                     if (temp_speed1 > speed1)
                         temp_speed1--;
-                    if (temp_speed1 < speed1)
+                    else if (temp_speed1 < speed1)
                         temp_speed1++;
 
                     if (temp_speed2 > speed2)
                         temp_speed2--;
-                    if (temp_speed2 < speed2)
+                    else if (temp_speed2 < speed2)
                         temp_speed2++;
-
+//                    Debug.Print("Speed; " + temp_speed1 + " " + temp_speed2);
                     Move(temp_speed1, temp_speed2);
                     Thread.Sleep(ramping_delay);
                 }
