@@ -1,11 +1,23 @@
-FezBridge is a Android Debug Bridge (ADB) implementation for FEZ Devices.
+#labels Featured,Phase-Implementation
+FezBridge is an [http://developer.android.com/guide/developing/tools/adb.html Android Debug Bridge (ADB)] implementation for FEZ Devices.
 
 = Introduction =
 
 FezBridge is ported from the [http://code.google.com/p/microbridge MicroBridge] for Arduino. 
-It is programmed in .NETMF and runs on FEZ devices from GHI electronics, like the FEZ Domino. Other devices like FEZ Panda needs a small hardware modification to support USB host mode.
+It is programmed in .NETMF and runs on FEZ devices from [http://www.ghielectronics.com/ GHI electronics], like the [http://www.ghielectronics.com/catalog/product/133 FEZ Domino]. Other devices like [http://www.ghielectronics.com/catalog/product/135 FEZ Panda] needs a small http://ghielectronics.blogspot.com/2011/03/usb-host-support-is-added-on-fez-panda.html hardware modification] to support USB host mode.
 
 
 = Details =
 
-At the moment FezBridge is a work in progress.
+At the moment FezBridge is a work in progress. The basic communication and USB enuration has been done.
+
+ADB works on almost every Android phone. That is important if you wan't to use [http://developer.android.com/guide/topics/usb/adk.html Android Open Accessory (ADK)]. ADK works only on Android phones with the newest firmware v2.3.4. But not all phones will support ADK, even with the newest firmware. This is where ADB can help. It has nearly the same functionality as ADK.
+
+You can use ADB to forward TCP/IP ports via USB between phone and hardware. Simple data pipes can be used for communication. 
+
+= To do list =
+
+ * ADB Port forwarding
+ * Check answers from Android
+ * Demo programs 
+ * Demo apps (Android side)
