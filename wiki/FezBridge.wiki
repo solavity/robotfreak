@@ -4,7 +4,7 @@ FezBridge is an [http://developer.android.com/guide/developing/tools/adb.html An
 = Introduction =
 
 FezBridge is ported from the [http://code.google.com/p/microbridge MicroBridge] for Arduino. 
-It is programmed in .NETMF and runs on FEZ devices from [http://www.ghielectronics.com/ GHI electronics], like the [http://www.ghielectronics.com/catalog/product/133 FEZ Domino]. Other devices like [http://www.ghielectronics.com/catalog/product/135 FEZ Panda] needs a small http://ghielectronics.blogspot.com/2011/03/usb-host-support-is-added-on-fez-panda.html hardware modification] to support USB host mode.
+It is programmed in .NETMF and runs on FEZ devices from [http://www.ghielectronics.com/ GHI electronics], like the [http://www.ghielectronics.com/catalog/product/133 FEZ Domino]. Other devices like [http://www.ghielectronics.com/catalog/product/135 FEZ Panda] needs a small [http://ghielectronics.blogspot.com/2011/03/usb-host-support-is-added-on-fez-panda.html hardware modification] to support USB host mode.
 
 
 = Details =
