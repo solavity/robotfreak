@@ -31,7 +31,9 @@ namespace FezAdbBridge
     private static bool initPhaseTwoComplete;
     private static bool isReady;
 
+    private static string hex = "0123456789ABCDEF";
     private static string hostName = "host::fezbridge";
+    private static string portName = "tcp:4567";
 
     private UInt32[] AdbData = new UInt32[6];
 
@@ -63,7 +65,7 @@ namespace FezAdbBridge
 
         for (int i = 0; i < data.Length; i++)
         {
-          datastring = datastring + ((sbyte)(data[i]) + " ");
+          datastring += (ByteToHex(data[i]) + " ");
         }
         Debug.Print(datastring);
         return data;
@@ -132,7 +134,7 @@ namespace FezAdbBridge
               {
                 case 133: // ADB data in
                   adbInPipe = usb.OpenPipe(adbEP);
-                  //adbInPipe.TransferTimeout = 0;              // recommended for interrupt transfers
+                  adbInPipe.TransferTimeout = 0;              // recommended for interrupt transfers
                   break;
                 case 5:   // ADB data out
                   adbOutPipe = usb.OpenPipe(adbEP);
@@ -198,13 +200,25 @@ namespace FezAdbBridge
         }
 
 
-        datastring = "In << ";
-
-        for (i = 0; i < adbData.Length; i++)
+        datastring = ByteArrayToString(adbData);
+        Debug.Print("In << " + datastring);
+        switch (datastring)
         {
-          datastring = datastring + ((sbyte)(adbData[i]) + " ");
+          case "CNXN":
+            break;
+          case "OPEN":
+            break;
+          case "OKAY":
+            break;
+          case "CLSE":
+            break;
+          case "WRTE":
+            SendAdbMessage(A_OKAY, 1, 25, null);
+            break;
+          case "device::":
+            SendAdbMessage(A_OPEN, 1, 0, StringToByteArray(portName));
+          break;
         }
-        Debug.Print(datastring);
       }
     }
 
@@ -242,12 +256,27 @@ namespace FezAdbBridge
       }
 
     }
+
     private static byte[] StringToByteArray(string str)
     {
       System.Text.UTF8Encoding enc = new System.Text.UTF8Encoding();
       return enc.GetBytes(str);
     }
 
+    private static string ByteArrayToString(byte[] data)
+    {
+      return new string(System.Text.Encoding.UTF8.GetChars(data));
+    }
+
+    public static string UIn16tToHex(UInt16 number)
+    {
+      return new string(new char[] { hex[(number & 0xF000) >> 12], hex[(number & 0xF00) >> 8], hex[(number & 0xF0) >> 4], hex[number & 0x0F] });
+    }
+
+    public static string ByteToHex(byte number)
+    {
+      return new string(new char[] { hex[(number & 0xF0) >> 4], hex[number & 0x0F] });
+    }
 
   }
 }
