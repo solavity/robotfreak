@@ -50,6 +50,7 @@ namespace FezAdbBridge
       {
         get { return 24; }
       }
+
       public byte[] ToArray()
       {
         byte[] data = new byte[ByteSize];
@@ -70,9 +71,25 @@ namespace FezAdbBridge
         Debug.Print(datastring);
         return data;
       }
+
+      public static sAdbMessage Parse(byte[] data)
+      {
+        sAdbMessage msg = new sAdbMessage();
+        int offset = 0;
+
+        msg.command    = (UInt32)(data[offset++] + (data[offset++] << 8) + (data[offset++] << 16) + (data[offset++] << 24));
+        msg.arg0       = (UInt32)(data[offset++] + (data[offset++] << 8) + (data[offset++] << 16) + (data[offset++] << 24));
+        msg.arg1       = (UInt32)(data[offset++] + (data[offset++] << 8) + (data[offset++] << 16) + (data[offset++] << 24));
+        msg.dataLength = (UInt32)(data[offset++] + (data[offset++] << 8) + (data[offset++] << 16) + (data[offset++] << 24));
+        msg.dataCheck  = (UInt32)(data[offset++] + (data[offset++] << 8) + (data[offset++] << 16) + (data[offset++] << 24));
+        msg.magic      = (UInt32)(data[offset++] + (data[offset++] << 8) + (data[offset++] << 16) + (data[offset++] << 24));
+        return msg;
+      }
     };
 
     static sAdbMessage adbMsg = new sAdbMessage();
+    static sAdbMessage adbInMsg = new sAdbMessage();
+    static byte[] adbData = new byte[64];
 
     public static void Main()
     {
@@ -179,11 +196,8 @@ namespace FezAdbBridge
 
     static void AdbListening()
     {
-      int count, i;
+      int count = 0;
       string datastring = "";
-
-      // Maximum data is wMaxPacketSize
-      byte[] adbData = new byte[adbInPipe.PipeEndpoint.wMaxPacketSize];
 
       // Read every bInterval
       while (true)
@@ -199,25 +213,44 @@ namespace FezAdbBridge
           Debug.Print(ex.ToString());
         }
 
-
-        datastring = ByteArrayToString(adbData);
-        Debug.Print("In << " + datastring);
-        switch (datastring)
+        if (count == 24)
         {
-          case "CNXN":
-            break;
-          case "OPEN":
-            break;
-          case "OKAY":
-            break;
-          case "CLSE":
-            break;
-          case "WRTE":
-            SendAdbMessage(A_OKAY, 1, 25, null);
-            break;
-          case "device::":
-            SendAdbMessage(A_OPEN, 1, 0, StringToByteArray(portName));
-          break;
+          adbInMsg = sAdbMessage.Parse(adbData);
+          switch (adbInMsg.command)
+          {
+            case A_CNXN:
+              Debug.Print("In << CNXN " + adbInMsg.arg0.ToString() + "," +adbInMsg.arg1.ToString());
+              break;
+            case A_OPEN:
+              Debug.Print("In << OPEN " + adbInMsg.arg0.ToString() + "," + adbInMsg.arg1.ToString());
+              break;
+            case A_OKAY:
+              Debug.Print("In << OKAY " + adbInMsg.arg0.ToString() + "," + adbInMsg.arg1.ToString());
+              break;
+            case A_CLSE:
+              Debug.Print("In << CLSE " + adbInMsg.arg0.ToString() + "," + adbInMsg.arg1.ToString());
+              break;
+            case A_WRTE:
+              Debug.Print("In << WRTE " + adbInMsg.arg0.ToString() + "," + adbInMsg.arg1.ToString());
+              SendAdbMessage(A_OKAY, adbInMsg.arg1, adbInMsg.arg0, null);
+              break;
+            default:
+              datastring = ByteArrayToString(adbData);
+              Debug.Print("In << " + count.ToString() + ":" + datastring);
+              break;
+          }
+        }
+        else
+        {
+          adbData[count] = 0;
+          datastring = ByteArrayToString(adbData);
+          Debug.Print("In << " + count.ToString() + ":" + datastring);
+          switch (datastring)
+          {
+            case "device::":
+              SendAdbMessage(A_OPEN, 1, 0, StringToByteArray(portName));
+              break;
+          }
         }
       }
     }
@@ -233,22 +266,26 @@ namespace FezAdbBridge
         {
           crc += data[cnt++];
         }
+        cnt++;
       }
-      byte[] zdata = new byte[data.Length + 1];
-      data.CopyTo(zdata, 0);
 
 
       adbMsg.command = st;
       adbMsg.arg0 = arg0;
       adbMsg.arg1 = arg1;
-      adbMsg.dataLength = (UInt32)zdata.Length;
+      adbMsg.dataLength = cnt;
       adbMsg.dataCheck = crc;
       adbMsg.magic = st ^ 0xffffffff;
       try
       {
         adbOutPipe.TransferData(adbMsg.ToArray(), 0, adbMsg.ByteSize);
+
         if (data != null)
+        {
+          byte[] zdata = new byte[data.Length + 1];
+          data.CopyTo(zdata, 0);
           adbOutPipe.TransferData(zdata, 0, zdata.Length);
+        }
       }
       catch (Exception ex)
       {
