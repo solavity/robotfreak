@@ -1,5 +1,5 @@
 #labels Featured,Phase-Implementation
-FezBridge is an [http://developer.android.com/guide/developing/tools/adb.html Android Debug Bridge (ADB)] implementation for FEZ Devices.
+FezBridge is an [http://developer.android.com/guide/developing/tools/adb.html Android Debug Bridge (ADB)] implementation in .NETMF for FEZ Devices.
 
 = Introduction =
 
@@ -19,8 +19,7 @@ A description of the ADB protocol can be found [http://lxr.e2g.org/source/system
 
 = To do list =
 
- * ADB Port forwarding
- * Check answers from Android
+ * build seperate driver class
  * Demo programs 
  * Demo apps (Android side)
 
