@@ -17,6 +17,9 @@ You can use ADB to forward TCP/IP ports via USB between phone and hardware. Simp
 
 A description of the ADB protocol can be found [http://lxr.e2g.org/source/system/core/adb/protocol.txt here].
 
+<wiki:video url="http://www.youtube.com/watch?v=sDUndL7bEic"/>
+
+
 = To do list =
 
  * build seperate driver class
