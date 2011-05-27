@@ -13,10 +13,18 @@ namespace FezAdbBridge
 {
   public class Program
   {
+    // Servos
+    static FEZ_Components.ServoMotor servo1 = new FEZ_Components.ServoMotor(FEZ_Pin.Digital.Di2);
+    static FEZ_Components.ServoMotor servo2 = new FEZ_Components.ServoMotor(FEZ_Pin.Digital.Di3);
+    static FEZ_Components.DistanceDetector myRanger = new FEZ_Components.DistanceDetector(FEZ_Pin.AnalogIn.An0, 
+      FEZ_Components.DistanceDetector.SharpSensorType.GP2D120);
+
+
     static USBH_RawDevice usb;
     static USBH_RawDevice.Pipe adbInPipe;
     static USBH_RawDevice.Pipe adbOutPipe;
     static Thread adbInThread; // polls the adb for data
+
 
     const UInt32 A_SYNC = 0x434e5953;
     const UInt32 A_CNXN = 0x4e584e43;
@@ -30,6 +38,7 @@ namespace FezAdbBridge
     private static bool initPhaseOneComplete;
     private static bool initPhaseTwoComplete;
     private static bool isReady;
+    private static bool busyWrite;
 
     private static string hex = "0123456789ABCDEF";
     private static string hostName = "host::fezbridge";
@@ -61,7 +70,8 @@ namespace FezAdbBridge
         data[offset++] = (byte)(arg1); data[offset++] = (byte)(arg1 >> 8); data[offset++] = (byte)(arg1 >> 16); data[offset++] = (byte)(arg1 >> 24);
         data[offset++] = (byte)(dataLength); data[offset++] = (byte)(dataLength >> 8); data[offset++] = (byte)(dataLength >> 16); data[offset++] = (byte)(dataLength >> 24);
         data[offset++] = (byte)(dataCheck); data[offset++] = (byte)(dataCheck >> 8); data[offset++] = (byte)(dataCheck >> 16); data[offset++] = (byte)(dataCheck >> 24);
-        data[offset++] = (byte)(magic); data[offset++] = (byte)(magic >> 8); data[offset++] = (byte)(magic >> 16); data[offset++] = (byte)(magic >> 24); 
+        data[offset++] = (byte)(magic); data[offset++] = (byte)(magic >> 8); data[offset++] = (byte)(magic >> 16); data[offset++] = (byte)(magic >> 24);
+        /*
         string datastring = "Out>> ";
 
         for (int i = 0; i < data.Length; i++)
@@ -69,6 +79,7 @@ namespace FezAdbBridge
           datastring += (ByteToHex(data[i]) + " ");
         }
         Debug.Print(datastring);
+         */
         return data;
       }
 
@@ -77,19 +88,19 @@ namespace FezAdbBridge
         sAdbMessage msg = new sAdbMessage();
         int offset = 0;
 
-        msg.command    = (UInt32)(data[offset++] + (data[offset++] << 8) + (data[offset++] << 16) + (data[offset++] << 24));
-        msg.arg0       = (UInt32)(data[offset++] + (data[offset++] << 8) + (data[offset++] << 16) + (data[offset++] << 24));
-        msg.arg1       = (UInt32)(data[offset++] + (data[offset++] << 8) + (data[offset++] << 16) + (data[offset++] << 24));
+        msg.command = (UInt32)(data[offset++] + (data[offset++] << 8) + (data[offset++] << 16) + (data[offset++] << 24));
+        msg.arg0 = (UInt32)(data[offset++] + (data[offset++] << 8) + (data[offset++] << 16) + (data[offset++] << 24));
+        msg.arg1 = (UInt32)(data[offset++] + (data[offset++] << 8) + (data[offset++] << 16) + (data[offset++] << 24));
         msg.dataLength = (UInt32)(data[offset++] + (data[offset++] << 8) + (data[offset++] << 16) + (data[offset++] << 24));
-        msg.dataCheck  = (UInt32)(data[offset++] + (data[offset++] << 8) + (data[offset++] << 16) + (data[offset++] << 24));
-        msg.magic      = (UInt32)(data[offset++] + (data[offset++] << 8) + (data[offset++] << 16) + (data[offset++] << 24));
+        msg.dataCheck = (UInt32)(data[offset++] + (data[offset++] << 8) + (data[offset++] << 16) + (data[offset++] << 24));
+        msg.magic = (UInt32)(data[offset++] + (data[offset++] << 8) + (data[offset++] << 16) + (data[offset++] << 24));
         return msg;
       }
     };
 
     static sAdbMessage adbMsg = new sAdbMessage();
     static sAdbMessage adbInMsg = new sAdbMessage();
-    static byte[] adbData = new byte[64];
+    static byte[] adbData = new byte[65];
 
     public static void Main()
     {
@@ -101,6 +112,7 @@ namespace FezAdbBridge
       initPhaseOneComplete = false;
       initPhaseTwoComplete = false;
       isReady = false;
+      busyWrite = false;
 
       // Sleep forever
       Thread.Sleep(Timeout.Infinite);
@@ -166,7 +178,7 @@ namespace FezAdbBridge
       }
       else
       {
-          initPhaseTwoComplete = true;
+        initPhaseTwoComplete = true;
       }
 
       if (initPhaseTwoComplete)
@@ -183,7 +195,7 @@ namespace FezAdbBridge
         adbInThread.Priority = ThreadPriority.Highest;
         adbInThread.Start();
 
-        SendAdbMessage(A_CNXN, 16777216, 4096, StringToByteArray(hostName));
+        SendAdbMessage(A_CNXN, 16777216, 4096, hostName);
       }
 
     }
@@ -193,6 +205,7 @@ namespace FezAdbBridge
       isReady = false;
 
     }
+
 
     static void AdbListening()
     {
@@ -219,40 +232,80 @@ namespace FezAdbBridge
           switch (adbInMsg.command)
           {
             case A_CNXN:
-              Debug.Print("In << CNXN " + adbInMsg.arg0.ToString() + "," +adbInMsg.arg1.ToString());
+              Debug.Print("In << CNXN " + adbInMsg.arg0.ToString() + "," + adbInMsg.arg1.ToString());
               break;
             case A_OPEN:
               Debug.Print("In << OPEN " + adbInMsg.arg0.ToString() + "," + adbInMsg.arg1.ToString());
               break;
             case A_OKAY:
               Debug.Print("In << OKAY " + adbInMsg.arg0.ToString() + "," + adbInMsg.arg1.ToString());
+              busyWrite = false;
               break;
             case A_CLSE:
               Debug.Print("In << CLSE " + adbInMsg.arg0.ToString() + "," + adbInMsg.arg1.ToString());
+              SendAdbMessage(A_OKAY, adbInMsg.arg1, adbInMsg.arg0);
               break;
             case A_WRTE:
               Debug.Print("In << WRTE " + adbInMsg.arg0.ToString() + "," + adbInMsg.arg1.ToString());
-              SendAdbMessage(A_OKAY, adbInMsg.arg1, adbInMsg.arg0, null);
+              SendAdbMessage(A_OKAY, adbInMsg.arg1, adbInMsg.arg0);
               break;
             default:
               datastring = ByteArrayToString(adbData);
-              Debug.Print("In << " + count.ToString() + ":" + datastring);
+              Debug.Print("In << (" + count.ToString() + ") " + datastring);
               break;
           }
         }
-        else
+        else if (count > 0)
         {
           adbData[count] = 0;
           datastring = ByteArrayToString(adbData);
-          Debug.Print("In << " + count.ToString() + ":" + datastring);
+          Debug.Print("In << (" + count.ToString() + ") " + datastring);
           switch (datastring)
           {
             case "device::":
-              SendAdbMessage(A_OPEN, 1, 0, StringToByteArray(portName));
+              SendAdbMessage(A_OPEN, 1, 0, portName);
+              break;
+            default:
+              string[] cmds = datastring.Split(';');
+              for (int i = 0; i < cmds.Length; i++)
+              {
+                string[] cmd = cmds[i].Split(':');
+                if (cmd.Length == 2)
+                {
+                  switch (cmd[0])
+                  {
+                    case "x":
+                      servo1.SetPosition((byte)int.Parse(cmd[1]));
+                      break;
+                    case "y":
+                      servo2.SetPosition((byte)int.Parse(cmd[1]));
+                      break;
+                  }
+                }
+
+              }
               break;
           }
         }
+        else if (count == 0)
+        {
+          float value = myRanger.GetDistance_cm();
+          Debug.Print("myRanger reading is: " + value.ToString());
+          SendAdbMessage(A_WRTE, 1, 25, "a0:" + value.ToString() + ";");
+          Thread.Sleep(10);
+        }
+
       }
+    }
+
+    public static void SendAdbMessage(UInt32 st, UInt32 arg0, UInt32 arg1)
+    {
+      SendAdbMessage(st, arg0, arg1, (byte[])null);
+    }
+
+    public static void SendAdbMessage(UInt32 st, UInt32 arg0, UInt32 arg1, string str)
+    {
+      SendAdbMessage(st, arg0, arg1, StringToByteArray(str));
     }
 
     public static void SendAdbMessage(UInt32 st, UInt32 arg0, UInt32 arg1, byte[] data)
@@ -269,7 +322,7 @@ namespace FezAdbBridge
         cnt++;
       }
 
-
+      Debug.Print("Out >> " + st.ToString() + "," + arg0.ToString() + "," + arg1.ToString());
       adbMsg.command = st;
       adbMsg.arg0 = arg0;
       adbMsg.arg1 = arg1;
