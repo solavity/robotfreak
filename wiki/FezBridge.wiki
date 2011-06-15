@@ -28,6 +28,7 @@ A description of the ADB protocol can be found [http://lxr.e2g.org/source/system
 
 = Weblinks =
  * [http://code.google.com/p/robotfreak/source/browse/#svn%2Ftrunk%2Ffez-bridge FezBridge Source repository]
+ * [http://code.google.com/p/robotfreak/downloads/detail?name=FezBridge_v01.zip&can=2&q= FezBridge_v01.zip]
  * [http://developer.android.com/guide/developing/tools/adb.html Android Debug Bridge (ADB)]
  * [http://www.ghielectronics.com/ GHI electronics]
  * [http://code.google.com/p/microbridge MicroBridge]
