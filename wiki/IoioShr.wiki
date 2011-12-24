@@ -1,4 +1,5 @@
 #summary IOIO-SHR Java programmable robot.
+#labels Featured
 
 = Introduction =
 
