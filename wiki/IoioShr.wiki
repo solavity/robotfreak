@@ -1,13 +1,27 @@
-#summary One-sentence summary of this page.
+#summary IOIO-SHR Java programmable robot.
 
 = Introduction =
 
 A Java programmable robot using an Android phone and the IOIO board.
 
 
-= Details =
+= Features =
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+ * Avoid obstacles
+ * Follow lines
+ * Bluetooth enabled
+ * remote controllable with Android phone
+ * autonomous operation with Android phone
+
+
+= Hardware =
+
+ * Sparkfun IOIO board
+ * Android phone (Nexus One)
+ * 2 hacked (continuos mode) servos 
+ * Pololu QRC-8A line sensor
+ * 2 tactile action switches with cable ties as bumper sensors
+ * car mount cellphone holder
+ * 5 AA NIMH accu cells
+
+= Videos =
