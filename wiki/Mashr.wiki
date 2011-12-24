@@ -1,4 +1,4 @@
-#summary One-sentence summary of this page.
+#summary MASHR Arduino based stzart here robot.
 #labels Featured
 
 = Introduction =
@@ -33,4 +33,3 @@ MASHR is my attempt to build a start here robot for beginners. It is Arduino bas
 <wiki:video url="http://www.youtube.com/watch?v=FtXKOPoubb0"/>
 
 <wiki:video url="http://www.youtube.com/watch?v=7JPtNbGoOS8"/>
-
