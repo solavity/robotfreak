@@ -7,6 +7,12 @@ http://farm3.static.flickr.com/2700/4032469329_bb50e8edd0_m.jpg
 
 [Ardubot]
 
+= IOIO-SHR =
+
+A Java programmable robot using an Android phone and the IOIO board.
+
+[IoioShr}
+
 = Mr. Red Adair =
 
 http://farm4.static.flickr.com/3385/3625798875_de5cfa762b_m.jpg
