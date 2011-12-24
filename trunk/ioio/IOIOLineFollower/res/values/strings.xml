@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, IOIOLineFollowerActivity!</string>
+    <string name="app_name">IOIOLineFollower</string>
+    <string name="servoL_label">servo L:</string>
+    <string name="servoM_label">servo M:</string>
+    <string name="servoR_label">servo R:</string>
+    <string name="auto_label">auto</string>
+        
+</resources>

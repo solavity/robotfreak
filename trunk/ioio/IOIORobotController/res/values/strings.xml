@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, IOIORobotControllerActivity!</string>
+    <string name="app_name">IOIORobotController</string>
+    <string name="servoL_label">servo L:</string>
+    <string name="servoM_label">servo M:</string>
+    <string name="servoR_label">servo R:</string>
+    <string name="auto_label">auto</string>
+    <string name="bumperL_label">bump L</string>
+    <string name="bumperR_label">bump R</string>
+        
+</resources>
