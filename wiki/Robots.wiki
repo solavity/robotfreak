@@ -1,4 +1,6 @@
+#summary This is my collection of robots
 #labels Featured
+
 This is my robot collection
 
 = Ardubot =
