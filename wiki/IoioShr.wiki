@@ -25,3 +25,10 @@ A Java programmable robot using an Android phone and the IOIO board.
  * 5 AA NIMH accu cells
 
 = Videos =
+
+ * http://www.youtube.com/watch?v=7oPWN1_5u1E
+ * http://www.youtube.com/watch?v=IGkqdokwDXQ
+
+= Weblinks =
+
+ * http://letsmakerobots.com/node/30351
