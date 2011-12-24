@@ -1,4 +1,4 @@
-#summary MASHR Arduino based stzart here robot.
+#summary MASHR Arduino based start here robot.
 #labels Featured
 
 = Introduction =
