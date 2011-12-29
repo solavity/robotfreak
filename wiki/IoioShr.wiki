@@ -29,7 +29,12 @@ A Java programmable robot using an Android phone and the IOIO board.
 
  * http://www.youtube.com/watch?v=7oPWN1_5u1E
  * http://www.youtube.com/watch?v=IGkqdokwDXQ
+ * http://www.youtube.com/watch?v=8w-0x8YQ064
 
 = Weblinks =
 
  * http://letsmakerobots.com/node/30351
+
+= Downloads =
+
+* http://robotfreak.googlecode.com/files/ioio-shr_v01.zip
