@@ -39,6 +39,8 @@ namespace FezAdbBridge
     private static bool initPhaseTwoComplete;
     private static bool isReady;
     private static bool busyWrite;
+    private static UInt32 localID = 1;
+    private static UInt32 remoteID = 0;
 
     private static string hex = "0123456789ABCDEF";
     private static string hostName = "host::fezbridge";
@@ -239,6 +241,7 @@ namespace FezAdbBridge
               break;
             case A_OKAY:
               Debug.Print("In << OKAY " + adbInMsg.arg0.ToString() + "," + adbInMsg.arg1.ToString());
+              remoteID = adbInMsg.arg0;
               busyWrite = false;
               break;
             case A_CLSE:
@@ -291,7 +294,7 @@ namespace FezAdbBridge
         {
           float value = myRanger.GetDistance_cm();
           Debug.Print("myRanger reading is: " + value.ToString());
-          SendAdbMessage(A_WRTE, 1, 25, "a0:" + value.ToString() + ";");
+          SendAdbMessage(A_WRTE, localID, remoteID, "a0:" + value.ToString() + ";");
           Thread.Sleep(10);
         }
 
