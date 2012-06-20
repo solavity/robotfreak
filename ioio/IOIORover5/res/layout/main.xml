@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+	<ToggleButton
+	    android:id="@+id/ToggleButton"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_margin="20px"
+	    android:textOff="Manu"
+	    android:textOn="Remote" />
+
+	<TextView
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:text="Speed control:" />
+	
+	<SeekBar
+		android:id="@+id/SeekBarL"
+		android:layout_height="wrap_content"
+		android:layout_width="fill_parent"
+		android:max="1000"
+		android:progress="500"
+		/>
+
+	<TextView
+	    android:id="@+id/TextViewL"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:text="Speed Left"
+	    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+	<SeekBar
+	    android:id="@+id/SeekBarR"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content" android:max="1000" android:progress="500"/>
+
+
+	<TextView
+	    android:id="@+id/TextViewR"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:text="Speed Right"
+	    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+	<LinearLayout
+	    android:id="@+id/linearLayout1"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content" >
+
+		<TextView
+		    android:id="@+id/textView2"
+		    android:layout_width="fill_parent"
+		    android:layout_height="wrap_content"
+		    android:text="Pan Tilt:" />
+
+	</LinearLayout>
+
+	<LinearLayout
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:paddingTop="20px">
+
+	</LinearLayout>
+
+	<TextView
+	    android:id="@+id/textView1"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:text="Pan"
+	    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+	<SeekBar
+	    android:id="@+id/SeekBarPan"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content" android:max="1000" android:progress="500"/>
+
+	<TextView
+	    android:id="@+id/textView3"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:text="Tilt"
+	    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+	<SeekBar
+	    android:id="@+id/SeekBarTilt"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content" android:progress="500" android:max="1000"/>
+
+	<TextView
+	    android:id="@+id/textView4"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:text="Ultrasonic" />
+
+	<ProgressBar
+	    android:id="@+id/progressBarUS"
+	    style="?android:attr/progressBarStyleHorizontal"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content" android:max="100"/>
+
+</LinearLayout>
