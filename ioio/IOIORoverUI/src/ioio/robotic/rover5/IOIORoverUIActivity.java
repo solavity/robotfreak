@@ -111,6 +111,7 @@ public class IOIORoverUIActivity extends IOIOActivity {
 		private IOIOUltrasonic ultrasonic;
 		private IOIOCompoundEye compoundeye;
 		private IOIOPanTiltServos pantilt;
+		private IOIOBlinkM blinkm;
 
 		// Pin numbers
 		// motor controller
@@ -142,6 +143,7 @@ public class IOIORoverUIActivity extends IOIOActivity {
 				ultrasonic = new IOIOUltrasonic(ioio_, echo, trigger);
 				compoundeye = new IOIOCompoundEye(ioio_, enable, up, rt, dn, lt);
 				pantilt = new IOIOPanTiltServos(ioio_, pan, tilt);
+				blinkm = new IOIOBlinkM(ioio_, 1, 0x09);
 				Mode = eMode.MOD_CHILLING;
 				enableUi(true);
 			} catch (ConnectionLostException e) {
@@ -158,13 +160,10 @@ public class IOIORoverUIActivity extends IOIOActivity {
 				switch (Mode)
 				{
 					case MOD_CHILLING:
-						doChilling();
 					break;
 					case MOD_CHAMELEON:
-						doChameleon();
 					break;
 					case MOD_PAPARAZZI:
-						doPaparazzi();
 					break;
 					case MOD_STALKER:
 						compoundeye.readCompoundEye(ioio_);
@@ -189,8 +188,6 @@ public class IOIORoverUIActivity extends IOIOActivity {
 							leftSpeed = (float) 0;
 							rightSpeed = (float) 0;
 						}
-
-						doStalker();
 					break;
 				}
 //				if (toggleButton_.isChecked()) {
@@ -209,6 +206,15 @@ public class IOIORoverUIActivity extends IOIOActivity {
 				leftMotor.setSpeed(leftSpeed);
 				rightMotor.setSpeed(rightSpeed);
 				pantilt.setPanTilt(ioio_, panValue, tiltValue);
+				if (distance < 10) 
+				  blinkm.fadeRGB(ioio_, 255, 0, 0);
+				else if (distance < 20)
+					  blinkm.fadeRGB(ioio_, 255, 255, 0);
+				else if (distance < 40)
+					  blinkm.fadeRGB(ioio_, 0, 255, 0);
+				else 
+					  blinkm.fadeRGB(ioio_, 0, 0, 255);
+				
 				setUi();
 				Thread.sleep(50);
 			} catch (InterruptedException e) {
@@ -220,25 +226,6 @@ public class IOIORoverUIActivity extends IOIOActivity {
 		}
 	}
 	
-	public void doChilling()
-	{
-		
-	}
-
-	public void doChameleon()
-	{
-		
-	}
-
-	public void doPaparazzi()
-	{
-		
-	}
-
-	public void doStalker()
-	{
-	}
-
 	@Override
 	protected IOIOLooper createIOIOLooper() {
 		return new Looper();
