@@ -19,13 +19,13 @@ public class IOIOCompoundEye {
 	private int panScale, tiltScale;
 	private int leftright, updown;
 
-	public IOIOCompoundEye(IOIO ioio, int enablePin, int upPin, int ltPin,
-			int rtPin, int dnPin) throws ConnectionLostException {
-		enableCE_ = ioio.openDigitalOutput(18);
-		ceUp_ = ioio.openAnalogInput(39);
-		ceLt_ = ioio.openAnalogInput(40);
-		ceRt_ = ioio.openAnalogInput(42);
-		ceDn_ = ioio.openAnalogInput(41);
+	public IOIOCompoundEye(IOIO ioio, int enablePin, int upPin, int rtPin,
+			int dnPin, int ltPin) throws ConnectionLostException {
+		enableCE_ = ioio.openDigitalOutput(enablePin);
+		ceUp_ = ioio.openAnalogInput(upPin);
+		ceRt_ = ioio.openAnalogInput(rtPin);
+		ceDn_ = ioio.openAnalogInput(dnPin);
+		ceLt_ = ioio.openAnalogInput(ltPin);
 	}
 
 	public void readCompoundEye(IOIO ioio) throws ConnectionLostException {
@@ -64,11 +64,12 @@ public class IOIOCompoundEye {
 			panScale = (ceLt + ceRt) / 3;
 			tiltScale = (ceUp + ceDn) / 3;
 
-			leftright = (ceLt - ceRt) * 5 / panScale;
+			leftright = (ceRt - ceLt) * 5 / panScale;
 			valPan = valPan + leftright * 10;
 			updown = (ceDn - ceUp) * 5 / tiltScale;
 			valTilt = valTilt + updown * 10;
 
+		}
 			if (valPan < 1000)
 				valPan = 1000;
 			if (valPan > 2000)
@@ -78,5 +79,14 @@ public class IOIOCompoundEye {
 			if (valTilt > 1900)
 				valTilt = 1700;
 		}
+	
+	public int getPanVal()
+	{
+		return this.valPan;
+	}
+
+	public int getTiltVal()
+	{
+		return this.valTilt;
 	}
 }

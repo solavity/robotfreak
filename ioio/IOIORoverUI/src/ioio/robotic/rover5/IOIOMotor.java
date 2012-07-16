@@ -7,18 +7,20 @@ import ioio.lib.api.exception.ConnectionLostException;
 
 public class IOIOMotor {
 	private PwmOutput pwm;
-	private DigitalOutput dir;
+	private DigitalOutput dir1;
+	private DigitalOutput dir2;
 	private float oldSpeed = 0;
 	private boolean oldDir = true;
 	private boolean Dir;
 
 	final int pwmFrequency = 100000;
 
-	public IOIOMotor(IOIO ioio, int pwmPin, int dirPin)
+	public IOIOMotor(IOIO ioio, int pwmPin, int dir1Pin, int dir2Pin)
 			throws ConnectionLostException {
 		pwm = ioio.openPwmOutput(pwmPin, pwmFrequency);
 		pwm.setDutyCycle(0);
-		dir = ioio.openDigitalOutput(dirPin, false);
+		dir1 = ioio.openDigitalOutput(dir1Pin, false);
+		dir2 = ioio.openDigitalOutput(dir2Pin, false);
 	}
 
 	public void setSpeed(float speed) throws ConnectionLostException {
@@ -28,7 +30,8 @@ public class IOIOMotor {
 			Dir = false;
 		}
 		if (oldDir != Dir) {
-			dir.write(Dir);
+			dir1.write(Dir);
+			dir2.write(!Dir);
 			oldDir = Dir;
 		}
 		if (oldSpeed != speed) {

@@ -2,14 +2,16 @@
 <animation-list xmlns:android="http://schemas.android.com/apk/res/android"
 	android:oneshot="false">
 
-	<item android:drawable="@drawable/welcome0" android:duration="200" />
-	<item android:drawable="@drawable/welcome2" android:duration="200" />
-	<item android:drawable="@drawable/welcome3" android:duration="200" />
-	<item android:drawable="@drawable/welcome2" android:duration="200" />
-	<item android:drawable="@drawable/welcome3" android:duration="200" />
-	<item android:drawable="@drawable/welcome2" android:duration="200" />
-	<item android:drawable="@drawable/welcome3" android:duration="200" />
-	<item android:drawable="@drawable/welcome2" android:duration="200" />
-	<item android:drawable="@drawable/welcome0" android:duration="10000" />
-	
+	<item android:drawable="@drawable/stalker0" android:duration="2000" />
+	<item android:drawable="@drawable/stalker1" android:duration="200" />
+	<item android:drawable="@drawable/stalker2" android:duration="200" />
+	<item android:drawable="@drawable/stalker3" android:duration="200" />
+	<item android:drawable="@drawable/stalker4" android:duration="200" />
+	<item android:drawable="@drawable/stalker5" android:duration="5000" />
+	<item android:drawable="@drawable/stalker4" android:duration="200" />
+	<item android:drawable="@drawable/stalker3" android:duration="200" />
+	<item android:drawable="@drawable/stalker2" android:duration="200" />
+	<item android:drawable="@drawable/stalker1" android:duration="200" />
+	<item android:drawable="@drawable/stalker0" android:duration="2000" />
+		
 </animation-list>
