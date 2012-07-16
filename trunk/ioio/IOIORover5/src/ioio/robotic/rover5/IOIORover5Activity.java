@@ -56,10 +56,12 @@ public class IOIORover5Activity extends IOIOActivity {
 
 		// Pin numbers
 		// motor controller
-		final int pwmA = 3;
-		final int dirA = 4;
-		final int pwmB = 13;
-		final int dirB = 14;
+		final int pwmA = 5;
+		final int dir1A = 3;
+		final int dir2A = 4;
+		final int pwmB = 14;
+		final int dir1B = 12;
+		final int dir2B = 13;
 		// pan tilt servos
 		final int pan = 11;
 		final int tilt = 10;
@@ -69,19 +71,19 @@ public class IOIORover5Activity extends IOIOActivity {
 		// compound eye
 		final int enable = 30;
 		final int up = 35;
-		final int lt = 35;
-		final int rt = 35;
-		final int dn = 35;
+		final int lt = 36;
+		final int rt = 37;
+		final int dn = 38;
 
 		@Override
 		public void setup() throws ConnectionLostException {
 			try {
 				led_ = ioio_.openDigitalOutput(IOIO.LED_PIN, true);
-				leftMotor = new IOIOMotor(ioio_, pwmB, dirB);
-				rightMotor = new IOIOMotor(ioio_, pwmA, dirA);
+				leftMotor = new IOIOMotor(ioio_, pwmB, dir1B, dir2B);
+				rightMotor = new IOIOMotor(ioio_, pwmA, dir1A, dir2A);
 				ultrasonic = new IOIOUltrasonic(ioio_, echo, trigger);
-				// compoundeye = new IOIOCompoundEye(ioio_, enable, up, lt, rt,
-				// dn);
+				// compoundeye = new IOIOCompoundEye(ioio_, enable, up, lt, dn,
+				// rt);
 				pantilt = new IOIOPanTiltServos(ioio_, pan, tilt);
 				enableUi(true);
 			} catch (ConnectionLostException e) {
@@ -103,6 +105,11 @@ public class IOIORover5Activity extends IOIOActivity {
 					panValue = 1000 + seekBarPan_.getProgress();
 					tiltValue = 1000 + seekBarTilt_.getProgress();
 				}
+				else {
+					leftSpeed = 0;
+					rightSpeed = 0;
+				}
+					
 				leftMotor.setSpeed(leftSpeed);
 				rightMotor.setSpeed(rightSpeed);
 				pantilt.setPanTilt(ioio_, panValue, tiltValue);
