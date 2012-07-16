@@ -8,7 +8,6 @@
 	    android:id="@+id/ToggleButton"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
-	    android:layout_margin="20px"
 	    android:textOff="Manu"
 	    android:textOn="Remote" />
 
@@ -55,14 +54,6 @@
 		    android:layout_width="fill_parent"
 		    android:layout_height="wrap_content"
 		    android:text="Pan Tilt:" />
-
-	</LinearLayout>
-
-	<LinearLayout
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:orientation="horizontal"
-		android:paddingTop="20px">
 
 	</LinearLayout>
 
