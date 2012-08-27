@@ -1,4 +1,4 @@
-package ioio.robotic.rover5;
+package ioio.robotic.roverUI;
 
 //import android.app.Activity;
 import android.graphics.drawable.AnimationDrawable;
@@ -12,11 +12,13 @@ import android.widget.Toast;
 
 import ioio.lib.api.DigitalOutput;
 import ioio.lib.api.IOIO;
+import ioio.lib.api.DigitalInput;
 import ioio.lib.api.exception.ConnectionLostException;
 import ioio.lib.util.BaseIOIOLooper;
 import ioio.lib.util.IOIOLooper;
 import ioio.lib.util.android.IOIOActivity;
 //import ioio.robotic.rover5.IOIORover5Activity.Looper;
+import ioio.robotic.rover5.R;
 
 public class IOIORoverUIActivity extends IOIOActivity {
 	public enum eMode { MOD_CHILLING, MOD_CHAMELEON, MOD_PAPARAZZI, MOD_STALKER }
@@ -25,6 +27,11 @@ public class IOIORoverUIActivity extends IOIOActivity {
 	public int panValue = 1500;
 	public int tiltValue = 1500;
 	public int distance = 0;
+	public int panIdx = 0;
+	public int cliff;
+	
+	public int[] pVal = new int[] {1500, 1400, 1300, 1400, 1500, 1600, 1700, 1800, 1700, 1600, 1500};
+	public int[] dVal = new int[11];
 //	public int ceL, ceR, ceU, ceD;
 	public eMode Mode;
 	public ImageView animation;
@@ -112,6 +119,7 @@ public class IOIORoverUIActivity extends IOIOActivity {
 		private IOIOCompoundEye compoundeye;
 		private IOIOPanTiltServos pantilt;
 		private IOIOBlinkM blinkm;
+		private IOIOCliffSensor cliffsensor;
 
 		// Pin numbers
 		// motor controller
@@ -127,6 +135,9 @@ public class IOIORoverUIActivity extends IOIOActivity {
 		// ultrasonic sensor
 		final int echo = 6;
 		final int trigger = 7;
+		// cliff sensors
+		final int cliffl = 27;
+		final int cliffr = 28;
 		// compound eye
 		final int enable = 30;
 		final int lt = 35;
@@ -138,6 +149,7 @@ public class IOIORoverUIActivity extends IOIOActivity {
 		public void setup() throws ConnectionLostException {
 			try {
 				led_ = ioio_.openDigitalOutput(IOIO.LED_PIN, true);
+				cliffsensor = new IOIOCliffSensor(ioio_, cliffl, cliffr);
 				leftMotor = new IOIOMotor(ioio_, pwmB, dir1B, dir2B);
 				rightMotor = new IOIOMotor(ioio_, pwmA, dir1A, dir2A);
 				ultrasonic = new IOIOUltrasonic(ioio_, echo, trigger);
@@ -157,22 +169,28 @@ public class IOIORoverUIActivity extends IOIOActivity {
 			try {
 //				led_.write(!toggleButton_.isChecked());
 				distance = ultrasonic.readUltrasonic(ioio_);
+				cliff = cliffsensor.readCliffSensor(ioio_);
 				switch (Mode)
 				{
 					case MOD_CHILLING:
+						leftSpeed = 0;
+						rightSpeed = 0;
+						panValue = 1500;
+						tiltValue = 1500;
 					break;
 					case MOD_CHAMELEON:
-					break;
 					case MOD_PAPARAZZI:
-					break;
-					case MOD_STALKER:
-						compoundeye.readCompoundEye(ioio_);
-						panValue = compoundeye.getPanVal();
-						tiltValue = compoundeye.getTiltVal();
-//						ceL = compoundeye.getLtVal();
-//						ceR = compoundeye.getRtVal();
-//						ceU = compoundeye.getUpVal();
-//						ceD = compoundeye.getDnVal();
+						if (panIdx > 10 || panIdx < 0)
+							panIdx = 0;
+						dVal[panIdx] = distance;
+						panValue = pVal[panIdx++];
+						
+						Thread.sleep(200);
+//						if (distance > 40) 
+//						{
+//							leftSpeed = (float) 0.3;
+//							rightSpeed = (float) 0.3;
+//						}
 						if (distance > 20) 
 						{
 							leftSpeed = (float) 0.2;
@@ -185,11 +203,77 @@ public class IOIORoverUIActivity extends IOIOActivity {
 						}
 						else
 						{
-							leftSpeed = (float) 0;
-							rightSpeed = (float) 0;
+							if (panValue < 1300)
+							{
+								leftSpeed = (float) 0.2;
+								rightSpeed = (float) 0;
+								
+							}
+							else if (panValue > 1700)
+							{
+								leftSpeed = (float) 0;
+								rightSpeed = (float) 0.2;
+								
+							}
+							else
+							{
+								leftSpeed = (float) 0;
+								rightSpeed = (float) 0;
+							}
+						}
+					break;
+					case MOD_STALKER:
+						compoundeye.readCompoundEye(ioio_);
+						panValue = compoundeye.getPanVal();
+						
+//						tiltValue = compoundeye.getTiltVal();
+//						ceL = compoundeye.getLtVal();
+//						ceR = compoundeye.getRtVal();
+//						ceU = compoundeye.getUpVal();
+//						ceD = compoundeye.getDnVal();
+							
+//						if (distance > 40) 
+//						{
+//							leftSpeed = (float) 0.3;
+//							rightSpeed = (float) 0.3;
+//						}
+						if (distance > 20) 
+						{
+							leftSpeed = (float) 0.2;
+							rightSpeed = (float) 0.2;
+						}
+						else if(distance < 10) 
+						{
+							leftSpeed = (float) -0.2;
+							rightSpeed = (float) -0.2;
+						}
+						else
+						{
+							if (panValue < 1300)
+							{
+								leftSpeed = (float) 0.2;
+								rightSpeed = (float) 0;
+								
+							}
+							else if (panValue > 1700)
+							{
+								leftSpeed = (float) 0;
+								rightSpeed = (float) 0.2;
+								
+							}
+							else
+							{
+								leftSpeed = (float) 0;
+								rightSpeed = (float) 0;
+							}
 						}
 					break;
 				}
+				if (cliff != 0)
+				{
+					leftSpeed = (float)-0.2;
+					rightSpeed = (float)0.2;
+				} 
 //				if (toggleButton_.isChecked()) {
 //					leftSpeed = (float) ((float) (((float) (seekBarL_
 //							.getProgress()) / 1000.0) - 0.5) * 2.0);
@@ -202,10 +286,12 @@ public class IOIORoverUIActivity extends IOIOActivity {
 //					leftSpeed = 0;
 //					rightSpeed = 0;
 //				}
+//				if (toggleButton_.isChecked()) {
 					
 				leftMotor.setSpeed(leftSpeed);
 				rightMotor.setSpeed(rightSpeed);
 				pantilt.setPanTilt(ioio_, panValue, tiltValue);
+//				}
 				if (distance < 10) 
 				  blinkm.fadeRGB(ioio_, 255, 0, 0);
 				else if (distance < 20)

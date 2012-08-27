@@ -15,12 +15,12 @@ public class IOIOMotor {
 
 	final int pwmFrequency = 100000;
 
-	public IOIOMotor(IOIO ioio, int pwmPin, int dir1Pin, int dir2Pin)
+	public IOIOMotor(IOIO ioio, int pwmPin, int dirPin1, int dirPin2)
 			throws ConnectionLostException {
 		pwm = ioio.openPwmOutput(pwmPin, pwmFrequency);
 		pwm.setDutyCycle(0);
-		dir1 = ioio.openDigitalOutput(dir1Pin, false);
-		dir2 = ioio.openDigitalOutput(dir2Pin, false);
+		dir1 = ioio.openDigitalOutput(dirPin1, false);
+		dir2 = ioio.openDigitalOutput(dirPin2, false);
 	}
 
 	public void setSpeed(float speed) throws ConnectionLostException {
