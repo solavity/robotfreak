@@ -15,6 +15,10 @@
 #define  FALSE	0
 #define  TRUE	1
 
+#define DEG45   10
+#define DEG90   20
+#define DEG135  31
+#define DEG180  40
 
 /* global Variables */
 
@@ -307,48 +311,44 @@ void readSensors()
       rightSpeed = 0;
       break;
     case 2:
-      Go(48, 150);
+      Go(20, 150);
       break;
     case 8:
-      Go(48, -150);
+      Go(20, -150);
       break;
-    case 4:
-      Turn(-20, 150);
+    case 4: // 90degree left
+      Turn(-DEG90, 150);
       break;
-    case 6:
-      Turn(20, 150);
+    case 6: // 90degree right
+      Turn(DEG90, 150);
       break;
-    case 1:
-      Turn(-45, 150);
+    case 1: // 45degree left
+      Turn(-DEG45, 150);
       break;
-    case 3:
-      Turn(45, 150);
+    case 3: // 45degree right
+      Turn(DEG45, 150);
       break;
-    case 7:
-      Turn(-135, 150);
+    case 7: // 135degree left
+      Turn(-DEG135, 150);
       break;
-    case 9:
-      Turn(135, 150);
+    case 9: // 135degree left
+      Turn(DEG135, 150);
       break;
     case 33:
-      doSquare(20, -21);
+      doSquare(20, DEG90);
       break;
     case 40:
-      doSpiral(20, 2, 21);
+      doSpiral(20, 2, DEG90);
       break;
     case 16:
       doNikolaus(20);
       break;
     case 41:
-      doWMR();
+      doLMR();
       break;
     case 19:
-      penPos++;
-      penServo.write(penPos);
       break;
     case 20 :
-      penPos--;
-      penServo.write(penPos);
       break;
     }
     lastIRCommand = actIRCommand ;
@@ -397,19 +397,19 @@ void doNikolaus(int length)
 
   Pen(PEN_DOWN);
   Go(length,150);
-  Turn(10,150);
+  Turn(DEG45,150);
   Go(roof,150);
-  Turn(21,150);
+  Turn(DEG90,150);
   Go(roof,150);
-  Turn(10,150);
+  Turn(DEG45,150);
   Go(length,150);
-  Turn(31,150);
+  Turn(DEG135,150);
   Go(diagonale,150);
-  Turn(31,150);
+  Turn(DEG135,150);
   Go(length,150);
-  Turn(31,150);
+  Turn(DEG135,150);
   Go(diagonale,150);
-  Turn(-31,150);
+  Turn(-DEG135,150);
   Go(length,150);
   Pen(PEN_UP);
 }
@@ -418,54 +418,96 @@ void doWMR()
 {
   Pen(PEN_UP);
   Go(20,150);
-  Turn(42,150); 
+  Turn(DEG180,150); 
 // draw W
   Pen(PEN_DOWN);
   Go(20,150);
-  Turn(-31,150);
+  Turn(-DEG135,150);
   Go(10,150);
-  Turn(21,150);
+  Turn(DEG90,150);
   Go(10,150);
-  Turn(-31,150);
+  Turn(-DEG135,150);
   Go(20,150);
   Pen(PEN_UP);
 
-  Turn(42,150);
+  Turn(DEG180,150);
   Go(20,150);
-  Turn(-21,150);
+  Turn(-DEG90,150);
   Go(5,150);
-  Turn(21,150);
+  Turn(DEG90,150);
 
 // draw M
   Pen(PEN_DOWN);
   Go(20,150);
-  Turn(-31,150);
+  Turn(-DEG135,150);
   Go(10,150);
-  Turn(21,150);
+  Turn(DEG90,150);
   Go(10,150);
-  Turn(-31,150);
+  Turn(-DEG135,150);
   Go(20,150);
   Pen(PEN_UP);
 
-  Turn(-21,150);
+  Turn(-DEG90,150);
   Go(5,150);
-  Turn(-21,150);
+  Turn(-DEG90,150);
     
 // draw R
   Pen(PEN_DOWN);
   Go(20,150);
-  Turn(21,150);
+  Turn(DEG90,150);
   Go(5,150);
-  Turn(10,150);
+  Turn(DEG45,150);
   Go(5,150);
-  Turn(10,150);
+  Turn(DEG45,150);
   Go(5,150);
-  Turn(10,150);
+  Turn(DEG45,150);
   Go(5,150);
-  Turn(10,150);
+  Turn(DEG45,150);
   Go(5,150);
-  Turn(-31,150);
+  Turn(-DEG135,150);
   Go(10,150);
+}
+
+void doLMR()
+{
+// draw L
+  Pen(PEN_DOWN);
+  Go(20,150);
+  Turn(-DEG90,150);
+  Go(10,150);
+  Pen(PEN_UP);
+  Go(5,150);
+  Turn(-DEG90,150);
+// draw M
+  Pen(PEN_DOWN);
+  Go(20,150);
+  Turn(DEG135,150);
+  Go(10,150);
+  Turn(-DEG90,150);
+  Go(10,150);
+  Turn(DEG135,150);
+  Go(20,150);
+
+  Pen(PEN_UP);
+  Turn(-DEG90,150);
+  Go(5,150);
+  Turn(-DEG90,150);
+    
+// draw R
+  Pen(PEN_DOWN);
+  Go(20,150);
+  Turn(DEG90,150);
+  Go(4,150);
+  Turn(DEG45,150);
+  Go(4,150);
+  Turn(DEG45,150);
+  Go(4,150);
+  Turn(DEG45,150);
+  Go(4,150);
+  Turn(DEG45,150);
+  Go(4,150);
+  Turn(-DEG135,150);
+  Go(12,150);
 }
 
 void setup() 
