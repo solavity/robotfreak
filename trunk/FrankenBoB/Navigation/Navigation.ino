@@ -231,13 +231,14 @@ int walkFrames[8][4] =
   
 };
 
-int turnFrames[7][4] = {
+int turnFrames[8][4] = {
                       { 6000,  6000,  6000,  6000 },
-                      { 5550,  5700,  7500,  5700 },
-                      { 3299,  5700,  7500,  4500 },
-                      { 1500,  5700,  7500,  3600 },
-                      {  600,  5700,  7500,  3600 },
-                      {  600,  5700,  6300,   600 },
+                      { 8800,  9000,  8000,  8000 },
+                      { 6900, 10600,  6800,  9800 },
+                      { 4553, 10577,  5491,  9355 },
+                      { 5200,  9000,  2700,  7700 },
+                      { 5298,  6558,  5325,  5579 },
+                      { 6000,  6000,  6000,  6000 },
                       { 6000,  6000,  6000,  6000 }
 };
 
@@ -256,9 +257,9 @@ int         lastDistance     = 100;  //previous distance measured on the ping
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Actions
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-Action turn(7, 35, 50, turnFrames);   //the turn right action
-Action walk(8, 100, 25, walkFrames); //the walk forward action
-Action* action;                       //pointer to the current action
+Action turn(7, 100, 25, turnFrames);   //the turn right action
+Action walk(8, 100, 25, walkFrames);   //the walk forward action
+Action* action;                        //pointer to the current action
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void setup()
@@ -281,13 +282,13 @@ void setup()
   matrix.begin(0x70);  // pass in the address 
   distance = 10;
   UpdateLEDMtx();
-  delay(5000);
+  delay(2000);
   distance = 5;
   UpdateLEDMtx();
-  delay(5000);
+  delay(2000);
   distance = 1;
   UpdateLEDMtx();
-  delay(5000);
+  delay(2000);
   distance=100;
 #endif  
 
