@@ -1,5 +1,5 @@
 /*
- AllInOne.ino - robot commanded by serial input
+ AllInOne.ino - MURCS robot commanded by serial input
  
  Looks for a set of ASCII characters in the signal to send
  commands to drive a small robot. 
@@ -22,12 +22,13 @@
  adapted for MURCS robot by RobotFreak 2013
  Visit http://www.robotfreak.de for more information
 */
+#include <Servo.h>
 #include <QTRSensors.h>
 #include <PID_v1.h>
 #include "iomapping.h"
 #include "motorcontrol.h"
 #include "encoder.h"
-#include "ultrasonic.h"
+//#include "ultrasonic.h"
 #include "sharpdistance.h"
 
 #define BUFFERSIZE 20
@@ -45,7 +46,7 @@
 int debugLevel = DEBUG_LEVEL;
 boolean DEBUGGING = true; // Whether debugging output over serial is on by defauly (can be flipped with 'h' command)
 
-int operationMode = MODE_LINE_FOLLOW_PID;
+int operationMode = MODE_REMOTE_CONTROL;
 
 
 int speedMultiplier = DEFAULT_speedMultiplier; // Default speed setting. Uses a range from 1-10 
@@ -69,17 +70,21 @@ double consKp=1, consKi=0.0, consKd=0.0;
 //Specify the links and initial tuning parameters
 PID myPID(&Input, &Output, &Setpoint, consKp, consKi, consKd, DIRECT);
 
+Servo myServo;
+
 void setup() 
 {
   initMotorControl();
 //  initEncoder();
+  myServo.attach(servoPin);
+  myServo.write(90);
 
   Serial.begin(9600);
 #ifdef USE_BLUETOOTH_SERIAL2
   Serial2.begin(115200);
 #endif
   if (debugLevel) { Serial.println("MURCS AllInOne V1.0");  }
-  initLineFollowPID();
+//  initLineFollowPID();
   
 } 
 
@@ -152,6 +157,7 @@ unsigned int  readLineSensors(int debugLevel)
   // To get raw sensor values, call:
   //  qtra.read(sensorValues); instead of unsigned int position = qtra.readLine(sensorValues);
   unsigned int position = qtra.readLine(sensorValues);
+  static int count = 0;
   
   if (debugLevel > 1)
   {
@@ -165,21 +171,29 @@ unsigned int  readLineSensors(int debugLevel)
     //Serial.println(); // uncomment this line if you are using raw values
     Serial.println(position); // comment this line out if you are using raw values
   }
-  
+  if (count > 10)
+  {
+    Serial2.write((position >> 8) & 0xFF);
+    Serial2.write(position & 0xFF);
+    count = 0;
+  }
   return position;
 }
 
 void initRemoteControl()
 {
+  myServo.write(90);
 }
 
 void initLineFollow()
 {
+  myServo.write(90);
   initLineSensors(debugLevel);
 }
 
 void initLineFollowPID()
 {
+  myServo.write(90);
   initLineSensors(debugLevel);
   Input = 0.0;
   Setpoint = 0.0;
@@ -191,11 +205,13 @@ void initLineFollowPID()
 
 void initWallFollow()
 {
+  myServo.write(180);
 }
 
 void initObstacleAvoid()
 {
-  initDistanceSensor();
+  myServo.write(90);
+//  initDistanceSensor();
 }
 
 void changeMode(int newMode)
@@ -402,16 +418,19 @@ void doLineFollow()
 
   if (position <= 1000)
   {  // far to the right
+    if (debugLevel > 1) { Serial.println("far to the right");}
     speed_l = 40;
     speed_r = 0;
   }
   else if (position <= 3000)
   {  // centered on line 
+    if (debugLevel > 1) { Serial.println("on line");}
     speed_l = 40;
     speed_r = 40;
   }
   else
   {  // far to the left
+    if (debugLevel > 1) { Serial.println("far to the left");}
     speed_l = 0;
     speed_r = 40;
   }
@@ -459,36 +478,61 @@ void doLineFollowPID()
 void doWallFollow()
 {
   int speed_l, speed_r;
+  float distance;
   float wallDistance;
 
-  // IR sensor returns distance in centimeters
-  wallDistance = readGP2D120Range(wallPin, debugLevel);
-  if (wallDistance > 0.0)
+  distance = readGP2D120Range(frontPin, debugLevel);
+  if (distance > 0.0)
   {
-    if (wallDistance < 8.0)
-    { // if we are way too close, turn away fast
-        if (debugLevel > 1) { Serial.println("too close");}
-        speed_l = 0;
-        speed_r = 50;
-    } else if (wallDistance < 12.0)
-    { // if we are too close, drift away
-        if (debugLevel > 1) { Serial.println("move away");}
-        speed_l = 30;
-        speed_r = 50;
-    } else if (wallDistance < 16.0)
-    { // default, drift towards wall
-        if (debugLevel > 1) { Serial.println("move closer");}
-        speed_l = 50;
-        speed_r = 30;
-    } else
-    { // too far away, turn towards wall more
-        if (debugLevel > 1) { Serial.println("too far");}
-        speed_l = 50;
-        speed_r = 20;
+    if (distance <= 10.0)
+    {
+      if (debugLevel > 1) { Serial.println("Obstacle ahead");}
+      driveWheels(0,0);
+      delay(500);
+      speed_l = -40;
+      speed_r = 40;
+      do {
+          distance = readGP2D120Range(frontPin, debugLevel);
+        delay(40);
+        driveWheels(speed_l, speed_r);
+      } while(distance < 20.0);  
+      if (debugLevel > 1) { Serial.println("turn away from Obstacle");}
+      speed_l = 0;
+      speed_r = 0;
+      driveWheels(speed_l,speed_r);
+      delay(500);
     }
-    stopTime = driveWheels(speed_l, speed_r);
+    else
+    {
+      // IR sensor returns distance in centimeters
+      wallDistance = readGP2D120Range(wallPin, debugLevel);
+      if (wallDistance > 0.0)
+      {
+        if (wallDistance < 8.0)
+        { // if we are way too close, turn away fast
+            if (debugLevel > 1) { Serial.println("too close to wall");}
+            speed_l = 0;
+            speed_r = 50;
+        } else if (wallDistance < 12.0)
+        { // if we are too close, drift away
+            if (debugLevel > 1) { Serial.println("move away from wall");}
+            speed_l = 30;
+            speed_r = 50;
+        } else if (wallDistance < 16.0)
+        { // default, drift towards wall
+            if (debugLevel > 1) { Serial.println("move closer to wall");}
+            speed_l = 50;
+            speed_r = 30;
+        } else
+        { // too far away, turn towards wall more
+            if (debugLevel > 1) { Serial.println("too far away from wall");}
+            speed_l = 50;
+            speed_r = 20;
+        }
+        stopTime = driveWheels(speed_l, speed_r);
+      }
+    }
   }
- 
   delay(40); 
 }
 
@@ -503,16 +547,18 @@ void doObstacleAvoid()
   {
     if (distance <= 10.0)
     {
+      if (debugLevel > 1) { Serial.println("Obstacle ahead");}
       driveWheels(0,0);
       delay(500);
-      speed_l = -50;
-      speed_r = 50;
+      speed_l = -40;
+      speed_r = 40;
       do {
 //        distance = getDistance(debugLevel);  // get distance
           distance = readGP2D120Range(frontPin, debugLevel);
         delay(40);
         driveWheels(speed_l, speed_r);
       } while(distance < 20.0);  
+      if (debugLevel > 1) { Serial.println("turn away from Obstacle");}
       speed_l = 0;
       speed_r = 0;
       driveWheels(speed_l,speed_r);
