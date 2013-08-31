@@ -1,11 +1,9 @@
 /*
-//    BoB autonomous navigation program. Version 2.1
-//      This program makes BoB walk forward until it observes an obstacle within 
-//      5 inces at which point it will turn right until the way is clear and then
-//      start  walking forward again (repeat).
+//    BoB remote control program. Version 1.2
+//      This program allows BoB to be actuated remotely (via USB cable) by a windows desktop application.
 //
 //    Copyright (C) 2012  Jonathan Dowdall, Project Biped (www.projectbiped.com)
-//                        adopted to BoB Biped by RobotFreak 
+//                        adopted to BoB Biped by RobotFreak
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -20,63 +18,16 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include <Arduino.h>
+
 #include <Servo.h>
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Ultrasonic Sensor Pin definitions
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//#define USE_PING                           // enable this define when using PING or SRF05 in single Pin mode
-//#define USE_SR04                           // enable this define when using SRF04, HC-SR04 or SRF05 in dual Pin mode
-//#define USE_LED_MTX
+void EstablistConnection();
+void InitializeServos();
+void ServosSetPosition(int servo, int pwm);
+bool ReadMessage();
+void SendResponse();
 
-#ifdef  USE_LED_MTX
-#include <Wire.h>
-#include "Adafruit_LEDBackpack.h"
-#include "Adafruit_GFX.h" 
-
-Adafruit_8x8matrix matrix = Adafruit_8x8matrix(); 
-int ledMtxMode = 0;
-
-static uint8_t PROGMEM
-  smile_bmp[] =
-  { B00011100,
-    B00111000,
-    B01101000,
-    B01001000,
-    B01001000,
-    B01101000,
-    B00111000,
-    B00011100 },
-  neutral_bmp[] =
-  { B00011000,
-    B00111000,
-    B00011000,
-    B00011000,
-    B00011000,
-    B00011000,
-    B00111000,
-    B00011000 },
-  frown_bmp[] =
-  { B01110000,
-    B00111000,
-    B00101100,
-    B00100100,
-    B00100100,
-    B00101100,
-    B00111000,
-    B01110000 }; 
-#endif
-
-#ifdef USE_PING
-#define pingPin    3                        //digital pin number on the arduino board that has the ping data line plugged into it
-#endif
-#ifdef USE_SR04
-#define pingPin    4                        //digital pin number on the arduino board that has the ping data line plugged into it
-#define triggerPin 3                        //digital pin number on the arduino board that has the ping data line plugged into it
-#endif
-
-
+#define obstaclePin 2
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Servo Pin definitions
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -102,7 +53,7 @@ Servo LHservo;                              // left hip servo object
 // Constants
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const int  numberOfServos             = 4;      // the communication with the control program is expecting 8 servos (only 4 needed for BoB!) 
-const int  messageLength              = 19;     // the number of bytes in a message from the control program  
+const int  messageLength              = 11;     // the number of bytes in a message from the control program  
 const int  maximumServoPosition       = 2000;   // the maximum pulse duration for the servo shield (2ms pulse)
 const int  minimumServoPosition       = 1000;   // the minimum pulse duration for the servo shield (1ms pulse)
 const int  centerServoPosition        = 1500;   // the minimum pulse duration for the servo shield (1ms pulse)
@@ -253,6 +204,8 @@ int calibration[4] = {-748, -972, -299, -199 };
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int         distance         = 100;  //distance measured on the ping
 int         lastDistance     = 100;  //previous distance measured on the ping
+int         Connected        = false;
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Actions
@@ -260,6 +213,85 @@ int         lastDistance     = 100;  //previous distance measured on the ping
 Action turn(7, 100, 25, turnFrames);   //the turn right action
 Action walk(8, 100, 25, walkFrames);   //the walk forward action
 Action* action;                        //pointer to the current action
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void setup()
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+{
+  //set the initial action
+  action = &walk;
+  //initialize the servos
+  InitializeServos();  
+  
+  //establist a connection with the remote controller (the FOBO poser application)
+  EstablistConnection();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void EstablistConnection()
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+{
+  int timeout = 100;  /* 10 seconds timeout */
+  //wait for a second to begin (keeps the communication line open in case a new program is being downloaded)
+  delay(1000);  
+  
+  //start up the communication
+  Serial.begin(38400);
+  Serial.print("\r\n+INQ=1\r\n"); // This is for Seeedstudio master/slave unit (change as needed for your model)   
+
+  //buffer to hold the incoming message
+  int inputBuffer[20];
+  
+  //broadcast our id until someone responds
+  while(true)
+  {
+    //broadcast id
+    Serial.print("FOBO");  
+    
+    //wait for a bit
+    delay(100);  
+    
+    //look for a response
+    if(Serial.available() > 1)
+    {
+      for(int b = 0; b < 2; b++)
+        inputBuffer[b] = Serial.read();
+        
+      // make sure someone friendly is on the line
+      if(inputBuffer[0] == (int)'h' && inputBuffer[1] == (int)'i')
+      {
+            Serial.print("connected");  
+            Connected = true;
+            break;
+      }
+    }
+    if (timeout) 
+    {
+      timeout--;    
+    }
+    else  /* timeout counter expired */
+    {
+      Connected = false;
+      break;
+    }
+  }
+  
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void InitializeServos()
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+{  
+  LHservo.attach(LHservoPin);
+  RHservo.attach(RHservoPin);
+  LAservo.attach(LAservoPin);
+  RAservo.attach(RAservoPin);
+
+  ServosSetPosition(LHservoIdx, centerServoPosition);
+  ServosSetPosition(RHservoIdx, centerServoPosition);
+  ServosSetPosition(LAservoIdx, centerServoPosition);
+  ServosSetPosition(RAservoIdx, centerServoPosition);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void  ServosSetPosition(int servo, int pwm)
@@ -283,22 +315,6 @@ void  ServosSetPosition(int servo, int pwm)
 }       
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void initializeServos()
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-{   
-  LHservo.attach(LHservoPin);
-  RHservo.attach(RHservoPin);
-  LAservo.attach(LAservoPin);
-  RAservo.attach(RAservoPin);
-
-  ServosSetPosition(LHservoIdx, centerServoPosition);
-  ServosSetPosition(RHservoIdx, centerServoPosition);
-  ServosSetPosition(LAservoIdx, centerServoPosition);
-  ServosSetPosition(RAservoIdx, centerServoPosition);
-}
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void SetServoPositions(int* frame)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 {
@@ -316,117 +332,23 @@ void SetServoPositions(int* frame)
     //Set PWM for the servo shield to send out to the servo
     ServosSetPosition(servo, pwm);       
   }
-
-
 }
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void setup()
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-{
-  //set the initial action
-  action = &walk;
-  
-  //wait for a second to begin (keeps the communication line open in case a new program is being downloaded)
-  delay(1000);    
-  
-  //start up the communication
-  Serial.begin(38400);  
-  Serial.print("\r\n+INQ=1\r\n"); // This is for Seeedstudio master/slave unit (change as needed for your model)   
-  //initialize the servos
-  initializeServos();
-
-#ifdef USE_LED_MTX
-  // initialize LED matrix
-  matrix.begin(0x70);  // pass in the address 
-  distance = 10;
-  UpdateLEDMtx();
-  delay(2000);
-  distance = 5;
-  UpdateLEDMtx();
-  delay(2000);
-  distance = 1;
-  UpdateLEDMtx();
-  delay(2000);
-  distance=100;
-#endif  
-
-
-}
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// some of the code below was found on http://arduino.cc/en/Tutorial/Ping?from=Tutorial.UltrasoundSensor.  Thanks Arduino guys!
-//  credit:
-//    by David A. Mellis
-//    modified 30 Aug 2011
-//    by Tom Igoe
-//    modified 04.07.2013
-//    by RobotFreak for SR04/HC-SR04
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-long microsecondsToInches(long microseconds)
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-{
-  // According to Parallax's datasheet for the PING))), there are
-  // 73.746 microseconds per inch (i.e. sound travels at 1130 feet per
-  // second).  This gives the distance travelled by the ping, outbound
-  // and return, so we divide by 2 to get the distance of the obstacle.
-  // See: http://www.parallax.com/dl/docs/prod/acc/28015-PING-v1.3.pdf
-  return microseconds / 74 / 2;
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-long microsecondsToCentimeters(long microseconds)
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-{
-  // The speed of sound is 340 m/s or 29 microseconds per centimeter.
-  // The ping travels out and back, so to find the distance of the
-  // object we take half of the distance travelled.
-  return microseconds / 29 / 2;
-}
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 long MeasureDistance()
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 {
-  // establish variables for duration of the ping, 
-  // and the distance result in inches and centimeters:
-  long duration = 0;
-  long inches, cm;
-#ifdef USE_SR04
-  pinMode(triggerPin, OUTPUT);
-  digitalWrite(triggerPin, LOW);
-  delayMicroseconds(2);
-  digitalWrite(triggerPin, HIGH);
-  delayMicroseconds(5);
-  digitalWrite(triggerPin, LOW);
-  pinMode(pingPin, INPUT);
-  duration = pulseIn(pingPin, HIGH);
-#endif
-#ifdef USE_PING
-  // The PING))) is triggered by a HIGH pulse of 2 or more microseconds.
-  // Give a short LOW pulse beforehand to ensure a clean HIGH pulse:
-  pinMode(pingPin, OUTPUT);
-  digitalWrite(pingPin, LOW);
-  delayMicroseconds(2);
-  digitalWrite(pingPin, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(pingPin, LOW);
-
-  // The same pin is used to read the signal from the PING))): a HIGH
-  // pulse whose duration is the time (in microseconds) from the sending
-  // of the ping to the reception of its echo off of an object.
-  pinMode(pingPin, INPUT);
-  duration = pulseIn(pingPin, HIGH);
-#endif
-
-  // convert the time into a distance
-  inches = microsecondsToInches(duration);
-  cm = microsecondsToCentimeters(duration);
-
-  return inches;
+  long ret = 0;
+  int val1, val2;
+  
+  pinMode(obstaclePin, INPUT);
+  val1 = digitalRead(obstaclePin);
+  val2 = digitalRead(obstaclePin);
+  if (val1 == LOW && val2 == LOW)
+     ret = 5;
+   else
+     ret = 10;
+  return ret;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -453,7 +375,6 @@ bool ObstacleInPath()
   //return the result
   return foundObstacle;
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void GetIntermediateFrame(const int* fromState, const int* toState, float percent, int* outState)
@@ -553,51 +474,89 @@ void UpdateAction()
   }
 }
 
-#ifdef USE_LED_MTX
-void UpdateLEDMtx()
-{
-  if (distance >= 10 && ledMtxMode != 1)
-  {
-    matrix.clear();
-    matrix.drawBitmap(0, 0, smile_bmp, 8, 8, LED_ON);
-    matrix.writeDisplay();
-    ledMtxMode = 1;
-  }
-  else if (distance < 10 && distance >= 5 && ledMtxMode !=2)
-  {
-    matrix.clear();
-    matrix.drawBitmap(0, 0, neutral_bmp, 8, 8, LED_ON);
-    matrix.writeDisplay();
-    ledMtxMode = 2;
-  }
-  else if (distance < 5 && ledMtxMode != 3)
-  {
-    matrix.clear();
-    matrix.drawBitmap(0, 0, frown_bmp, 8, 8, LED_ON);
-    matrix.writeDisplay();
-    ledMtxMode = 3;
-  }
-}
-#endif
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void loop()
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-{
-  //this is the main update loop for the microcontroller
+{  
+  if (Connected == true)
+  {
+    // check to see if there are enough bytes on the serial line for a message
+    if (Serial.available() >= messageLength) 
+      // read the incoming message
+      if( ReadMessage() )    
+        // respond to the computer that is controlling FOBO
+        SendResponse();      
+  }
+  else
+  {
+    //update the current action
+    UpdateAction();
   
-  //update the current action
-  UpdateAction();
+    //get the frame from the current action  
+    int frame[numberOfServos];
+    action->GetCurrentFrame(frame);
   
-  //get the frame from the current action  
-  int frame[numberOfServos];
-  action->GetCurrentFrame(frame);
+    //set the servo positions for this frame number
+    SetServoPositions(frame);                    
+  }
   
-  //set the servo positions for this frame number
-  SetServoPositions(frame);                    
+}
 
-#ifdef USE_LED_MTX
-  UpdateLEDMtx();
-#endif
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool ReadMessage()
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+{
+  // buffer to hold the incoming message
+  int inputBuffer[20];
+
+  // read the message
+  int index = 0;
+  while(Serial.available() > 0)
+  {
+    inputBuffer[index] = Serial.read();
+    index++;
+  }
+
+  // make sure the message starts with "cmd" ... otherwise it isn't a valid message
+  if(inputBuffer[0] == (int)'c' && inputBuffer[1] == (int)'m' && inputBuffer[2] == (int)'d')
+  {
+    //set the servo positions
+    for (int servo = 0; servo < numberOfServos; servo++)
+    {      
+      // each servo position is sent as a 2 byte value (high byte, low byte) unsigned integer (from 0 to 65536)
+      // this number is encoding the angle of the servo. The number is 100 * the servo angle.  This allows for the
+      // storage of 2 significant digits(i.e. the value can be from 0.00 to 120.00 and every value in between).
+      // Also remember that the servos FOBO uses have a range of 120 degrees, so the home position is 60 degrees.
+      word value = word(inputBuffer[servo*2 + 1 + 3], inputBuffer[servo*2 + 0 + 3]);
+      float servoAngle = (float)value/100.00;
+      
+      // the servo control shield commands the servos via pulse width modulations, not angles
+      // the PWMs range from 1000 (equal to 0 degrees) to 2000 (equal to 120 degrees)
+      // so the servo angle needs to be converted to the corresponding PWM range.
+      int pwm = (int)(servoAngle/120.0* (float)(maximumServoPosition - minimumServoPosition)) + minimumServoPosition;
+      
+      //Set PWM for the servo shield to send out to the servo
+      ServosSetPosition(servo, pwm);       
+    }
+
+    // a valid message was received    
+    return true;
+  }  
+  else
+    // the message wasn't valid
+    return false;  
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void SendResponse()
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+{
+  // the program is expecting feedback for each the servo position
+  // FOBO doesn't have any position feedback, so just send the center position (128)    
+  for(int s = 0; s < numberOfServos; s++)
+    Serial.write(128);
+  
+  // end the response  
+  Serial.print("done");  
 }
 
