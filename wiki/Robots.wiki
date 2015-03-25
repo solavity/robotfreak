@@ -1,5 +1,5 @@
 #labels Featured
-This repositrory has been migrated to github
+This repository has been migrated to github
 https://github.com/robotfreak/robotfreak
 
 #summary This is my collection of robots
