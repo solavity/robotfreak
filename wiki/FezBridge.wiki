@@ -1,6 +1,9 @@
 #summary FezBridge is a ABD implementation for .NETMF FEZ devices
 #labels Featured,Phase-Implementation
 
+This repository has been migrated to github
+https://github.com/robotfreak/robotfreak
+
 FezBridge is an [http://developer.android.com/guide/developing/tools/adb.html Android Debug Bridge (ADB)] implementation in .NETMF for FEZ Devices.
 
 = Introduction =
